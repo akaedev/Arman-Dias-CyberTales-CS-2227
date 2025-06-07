@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Cyber Hygiene Theory Book</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/main.css') }}">
+  <style>
+    body {
+      font-family: sans-serif;
+      line-height: 1.6;
+      margin: 0;
+      padding: 0;
+      background-color: #5499C7;
+      color: #fff;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 3rem auto;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 2rem;
+      border-radius: 10px;
+      backdrop-filter: blur(5px);
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 2.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .nav {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .nav a {
+      text-decoration: none;
+      color: #fff;
+      background: #2b2d42;
+      padding: 0.7rem 1.5rem;
+      border-radius: 5px;
+      transition: background 0.3s;
+    }
+
+    .nav a:hover {
+      background: #1f2d3d;
+    }
+
+    .chapter {
+      margin-bottom: 1.5rem;
+      background-color: rgba(255, 255, 255, 0.15);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .chapter h2 {
+      margin: 0;
+      padding: 1rem;
+      background-color: #2b2d42;
+      cursor: pointer;
+      font-size: 1.3rem;
+    }
+
+    .chapter-content {
+      display: none;
+      padding: 1rem;
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .chapter-content p {
+      margin-bottom: 1rem;
+    }
+
+    .chapter.active .chapter-content {
+      display: block;
+    }.lang-switch {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 9999;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.lang-switch a {
+  margin: 0 5px;
+  text-decoration: none;
+  color: #333;
+  font-weight: bold;
+}
+
+.lang-switch a:hover {
+  text-decoration: underline;
+}
+  </style>
+</head>
+<body>
+<div class="lang-switch">
+  {% set args = request.view_args.copy() %}
+  {% set args = args.update({'lang_code': 'ru'}) or args %}
+  <a href="{{ url_for(request.endpoint, **args) }}">🇷🇺 RU</a>
+  {% set args = request.view_args.copy() %}
+  {% set args = args.update({'lang_code': 'en'}) or args %}
+  <a href="{{ url_for(request.endpoint, **args) }}">🇬🇧 EN</a>
+  {% set args = request.view_args.copy() %}
+  {% set args = args.update({'lang_code': 'kk'}) or args %}
+  <a href="{{ url_for(request.endpoint, **args) }}">🇰🇿 KK</a>
+</div>
+  <div class="container">
+    <div class="nav">
+      <a href="{{ url_for('index_lang', lang_code=lang_code) }}" onclick="localStorage.setItem('navigateToSection', '2');">&larr; Back to Main Menu</a>
+    </div>
+
+    <h1>Cyber Hygiene Theory Book</h1>
+
+    <div class="chapter">
+      <h2 onclick="toggleChapter(this)">Chapter 1: What is Cyber Hygiene?</h2>
+      <div class="chapter-content">
+        <p>Cyber hygiene refers to the practices and steps users take to maintain online safety and secure digital systems. It includes everything from using antivirus software to practicing safe browsing habits.</p>
+        <p>Like personal hygiene prevents illness, cyber hygiene prevents data breaches, identity theft, malware infections, and other security incidents.</p>
+        <p>Routine behaviors such as password updates, software patching, and cautious email handling are the pillars of good cyber hygiene.</p>
+      </div>
+    </div>
+
+    <div class="chapter">
+      <h2 onclick="toggleChapter(this)">Chapter 2: Password Management</h2>
+      <div class="chapter-content">
+        <p>Strong passwords should be at least 12 characters long and include a mix of letters, numbers, and special characters.</p>
+        <p>Avoid using the same password for multiple accounts. Use a trusted password manager to store and generate complex passwords.</p>
+        <p>Enable two-factor authentication wherever possible to add an extra layer of protection.</p>
+      </div>
+    </div>
+
+    <div class="chapter">
+      <h2 onclick="toggleChapter(this)">Chapter 3: Software Updates</h2>
+      <div class="chapter-content">
+        <p>Outdated software often contains known vulnerabilities. Keeping your system, browser, and applications up to date closes these security holes.</p>
+        <p>Enable automatic updates or regularly check for new versions from official sources.</p>
+        <p>Don’t ignore update prompts — they’re critical for maintaining your digital safety.</p>
+      </div>
+    </div>
+
+    <div class="chapter">
+      <h2 onclick="toggleChapter(this)">Chapter 4: Phishing Awareness</h2>
+      <div class="chapter-content">
+        <p>Phishing attacks attempt to trick users into giving away sensitive information through fake emails, messages, or websites.</p>
+        <p>Be skeptical of unexpected messages requesting personal data. Look for odd URLs, misspellings, or urgent language pressuring immediate action.</p>
+        <p>Never click suspicious links. Report phishing emails to your email provider or employer.</p>
+      </div>
+    </div>
+
+    <div class="chapter">
+      <h2 onclick="toggleChapter(this)">Chapter 5: Network Safety</h2>
+      <div class="chapter-content">
+        <p>Public Wi-Fi can be dangerous. Avoid accessing sensitive accounts on open networks without a VPN.</p>
+        <p>Secure your home Wi-Fi with a strong password and WPA3 encryption. Change your router's default admin credentials.</p>
+        <p>Disable file sharing and limit device access on shared networks.</p>
+      </div>
+    </div>
+
+    <div class="chapter">
+      <h2 onclick="toggleChapter(this)">Chapter 6: Backup and Recovery</h2>
+      <div class="chapter-content">
+        <p>Regularly back up your data to cloud services or external hard drives to protect against data loss from ransomware or hardware failure.</p>
+        <p>Use automated backup schedules to ensure consistency.</p>
+        <p>Test your recovery process periodically to ensure your backups are valid and usable.</p>
+      </div>
+    </div>
+
+    <div class="chapter">
+      <h2 onclick="toggleChapter(this)">Chapter 7: Safe Browsing</h2>
+      <div class="chapter-content">
+        <p>Stick to trusted websites. Check for HTTPS in the browser bar to ensure secure connections.</p>
+        <p>Avoid downloading from sketchy sites or clicking unknown ads. Use browser extensions like ad blockers and anti-trackers.</p>
+        <p>Clear cookies and browsing data regularly, and be mindful of website permissions.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    function toggleChapter(header) {
+      const chapter = header.parentElement;
+      chapter.classList.toggle('active');
+    }
+  </script>
+
+</body>
+</html>

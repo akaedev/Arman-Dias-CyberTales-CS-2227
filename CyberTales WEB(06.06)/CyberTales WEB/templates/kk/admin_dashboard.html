@@ -1,0 +1,20 @@
+<h2>Басқару тақтасы</h2>
+
+<h3>Сұрақты қосу</h3>
+<form method="post">
+  {{ form.hidden_tag() }}
+  {{ form.text.label }}<br>{{ form.text(size=80) }}<br>
+  {{ form.opt1.label }}<br>{{ form.opt1(size=60) }}<br>
+  {{ form.opt2.label }}<br>{{ form.opt2(size=60) }}<br>
+  {{ form.opt3.label }}<br>{{ form.opt3(size=60) }}<br>
+  {{ form.correct.label }}<br>{{ form.correct(min=0, max=2) }}<br>
+  {{ form.explanation.label }}<br>{{ form.explanation(rows=3, cols=80) }}<br>
+  {{ form.submit() }}
+</form>
+
+<h3>Сұрақтар</h3>
+<ul>
+  {% for q in questions %}
+    <li>{{ q.text }} — <a href="{{ url_for('admin.delete_question', id=q.id) }}">Жою</a></li>
+  {% endfor %}
+</ul>

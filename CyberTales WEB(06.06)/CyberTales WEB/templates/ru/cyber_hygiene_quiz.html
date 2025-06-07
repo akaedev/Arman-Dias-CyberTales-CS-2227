@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Куиз по Кибергигиене</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/main.css') }}">
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #5499C7;
+      color: #fff;
+      margin: 0;
+      padding: 2rem;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 2rem;
+      border-radius: 12px;
+      backdrop-filter: blur(6px);
+      box-shadow: 0 0 20px rgba(0,0,0,0.2);
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 2.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .nav {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .nav a {
+      text-decoration: none;
+      color: #fff;
+      background: #2b2d42;
+      padding: 0.7rem 1.5rem;
+      border-radius: 6px;
+      transition: background 0.3s;
+    }
+
+    .nav a:hover {
+      background: #1f2d3d;
+    }
+
+    .question {
+      margin-bottom: 1.5rem;
+      padding: 1rem;
+      border-radius: 8px;
+      background-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .question h3 {
+      margin-bottom: 0.5rem;
+    }
+
+    label {
+      display: block;
+      margin: 0.4rem 0;
+      cursor: pointer;
+    }
+
+    .correct {
+      background-color: rgba(76, 175, 80, 0.3);
+    }
+
+    .incorrect {
+      background-color: rgba(244, 67, 54, 0.3);
+    }
+
+    button {
+      background-color: #2b2d42;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background-color: #1f2d3d;
+    }
+
+    #result {
+      margin-top: 2rem;
+      font-size: 1.3rem;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .explanation {
+      margin-top: 0.5rem;
+      font-size: 0.95rem;
+      color: #ffdfdf;
+    }.lang-switch {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 9999;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.lang-switch a {
+  margin: 0 5px;
+  text-decoration: none;
+  color: #333;
+  font-weight: bold;
+}
+
+.lang-switch a:hover {
+  text-decoration: underline;
+}
+  </style>
+</head>
+<body>
+<div class="lang-switch">
+  {% set args = request.view_args.copy() %}
+  {% set args = args.update({'lang_code': 'ru'}) or args %}
+  <a href="{{ url_for(request.endpoint, **args) }}">🇷🇺 RU</a>
+  {% set args = request.view_args.copy() %}
+  {% set args = args.update({'lang_code': 'en'}) or args %}
+  <a href="{{ url_for(request.endpoint, **args) }}">🇬🇧 EN</a>
+  {% set args = request.view_args.copy() %}
+  {% set args = args.update({'lang_code': 'kk'}) or args %}
+  <a href="{{ url_for(request.endpoint, **args) }}">🇰🇿 KK</a>
+</div>
+  <div class="container">
+    <div class="nav">
+      <a href="{{ url_for('index_lang', lang_code=lang_code) }}" onclick="localStorage.setItem('navigateToSection', '2');">&larr; Вернуться в главное меню</a>
+    </div>
+
+    <h1>Куиз по Кибергигиене</h1>
+
+    <form id="quizForm"></form>
+
+    <div style="text-align: center; margin-top: 1rem;">
+      <button type="button" onclick="submitQuiz()">Отправить ответ</button>
+    </div>
+
+    <div id="result"></div>
+  </div>
+
+  <script>
+  const lang_code = "{{ lang_code }}";
+  let questions = [];
+
+  fetch(`/${lang_code}/api/quiz-questions`)
+    .then(res => res.json())
+    .then(data => {
+      questions = data;
+      renderQuestions();
+    });
+
+  function renderQuestions() {
+    const form = document.getElementById('quizForm');
+    questions.forEach((q, i) => {
+      const div = document.createElement('div');
+      div.classList.add('question');
+      div.innerHTML = `<h3>${i + 1}. ${q.text}</h3>` +
+        q.options.map((opt, j) => `
+          <label>
+            <input type="radio" name="q${i}" value="${j}"> ${opt}
+          </label>`).join('');
+      form.appendChild(div);
+    });
+  }
+
+  function submitQuiz() {
+    let score = 0;
+    const allQuestions = document.querySelectorAll('.question');
+    allQuestions.forEach((qEl, i) => {
+      const correctIndex = questions[i].correct;
+      const selected = qEl.querySelector('input[name="q' + i + '"]:checked');
+      const labels = qEl.querySelectorAll('label');
+      labels.forEach((label, idx) => {
+        label.classList.remove('correct', 'incorrect');
+        if (idx === correctIndex) label.classList.add('correct');
+      });
+      if (selected) {
+        const answer = parseInt(selected.value);
+        if (answer === correctIndex) {
+          score++;
+        } else {
+          labels[answer].classList.add('incorrect');
+          const explanation = document.createElement('div');
+          explanation.className = 'explanation';
+          explanation.innerText = "Explanation: " + questions[i].explanation;
+          if (!qEl.querySelector('.explanation')) {
+            qEl.appendChild(explanation);
+          }
+        }
+      }
+    });
+    document.getElementById('result').innerText = `Your Score: ${score} / ${questions.length}`;
+  }
+  
+</script>
+
+</body>
+</html>

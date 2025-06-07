@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Зарегистрироваться</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/main.css') }}">
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f4f6f8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      background-color: #ffffff;
+      padding: 2rem 3rem;
+      border-radius: 12px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
+    }
+    h2 {
+      margin-bottom: 1.5rem;
+      color: #333;
+    }
+    form div {
+      margin-bottom: 1rem;
+      text-align: left;
+    }
+    label {
+      display: block;
+      margin-bottom: 0.25rem;
+      color: #555;
+    }
+    input[type="text"], input[type="password"] {
+      width: 100%;
+      padding: 0.6rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      color: #000;
+      background-color: #fff;
+    }
+    .toggle-password {
+      display: block;
+      margin-top: 0.3rem;
+      font-size: 0.9rem;
+      color: #5499C7;
+      cursor: pointer;
+    }
+    .strength-indicator {
+      margin-top: 0.3rem;
+      font-size: 0.85rem;
+      font-weight: bold;
+    }
+    .weak {
+      color: #e74c3c;
+    }
+    .medium {
+      color: #f39c12;
+    }
+    .strong {
+      color: #2ecc71;
+    }
+    button, input[type="submit"] {
+      background-color: #5499C7;
+      color: white;
+      border: none;
+      padding: 0.7rem 1.2rem;
+      border-radius: 6px;
+      cursor: pointer;
+      width: 100%;
+      font-weight: bold;
+      transition: background 0.3s;
+    }
+    button:hover, input[type="submit"]:hover {
+      background-color: #417cb8;
+    }
+    .error {
+      color: red;
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+      text-align: left;
+    }
+    a {
+      color: #5499C7;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    p {
+      margin-top: 1rem;
+      font-size: 0.95rem;
+    }.lang-switch {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 9999;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.lang-switch a {
+  margin: 0 5px;
+  text-decoration: none;
+  color: #333;
+  font-weight: bold;
+}
+
+.lang-switch a:hover {
+  text-decoration: underline;
+}
+  </style>
+</head>
+<body>
+  <div class="lang-switch">
+  {% set args = request.view_args.copy() %}
+  {% set args = args.update({'lang_code': 'ru'}) or args %}
+  <a href="{{ url_for(request.endpoint, **args) }}">🇷🇺 RU</a>
+  {% set args = request.view_args.copy() %}
+  {% set args = args.update({'lang_code': 'en'}) or args %}
+  <a href="{{ url_for(request.endpoint, **args) }}">🇬🇧 EN</a>
+  {% set args = request.view_args.copy() %}
+  {% set args = args.update({'lang_code': 'kk'}) or args %}
+  <a href="{{ url_for(request.endpoint, **args) }}">🇰🇿 KK</a>
+</div>
+  <div class="container">
+    <h2>Тіркелу</h2>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for msg in messages %}
+          <div class="error">{{ msg }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+    <form method="post">
+      {{ form.hidden_tag() }}
+      <div>
+        {{ form.username.label }}
+        {{ form.username(size=32) }}
+      </div>
+      <div>
+        {{ form.password.label }}
+        {{ form.password(id="password", size=32) }}
+        <span class="toggle-password" onclick="togglePassword()">Құпия сөзді көрсету</span>
+        <div id="strengthText" class="strength-indicator"></div>
+        {% for error in form.password.errors %}
+          <div class="error">{{ error }}</div>
+        {% endfor %}
+      </div>
+      <div>
+        {{ form.submit() }}
+      </div>
+    </form>
+    <p>Сізде есептік жазба бар ма? <a href="{{ url_for('auth.login_lang', lang_code=lang_code) }}">Мұнда кіріңіз</a>.</p>
+  </div>
+
+  <script>
+    function togglePassword() {
+      const pw = document.getElementById('password');
+      pw.type = pw.type === 'password' ? 'text' : 'password';
+    }
+
+    const passwordInput = document.getElementById('password');
+    const strengthText = document.getElementById('strengthText');
+
+    passwordInput.addEventListener('input', function () {
+      const value = passwordInput.value;
+      let strength = 0;
+
+      if (value.length >= 8) strength++;
+      if (/[A-Z]/.test(value)) strength++;
+      if (/[0-9]/.test(value)) strength++;
+      if (value.length >= 16) strength++;
+
+      switch (strength) {
+        case 0:
+        case 1:
+          strengthText.textContent = 'Strength: Weak';
+          strengthText.className = 'strength-indicator weak';
+          break;
+        case 2:
+        case 3:
+          strengthText.textContent = 'Strength: Medium';
+          strengthText.className = 'strength-indicator medium';
+          break;
+        case 4:
+          strengthText.textContent = 'Strength: Strong';
+          strengthText.className = 'strength-indicator strong';
+          break;
+      }
+    });
+  </script>
+</body>
+</html>
